@@ -6,8 +6,8 @@ import {
 export type MetodoIdentificacao = "FACIAL" | "DIGITAL" | "OUTRO" | "MANUAL" | "SIMULADOR";
 
 export interface EntradaDecisao {
-  /** id (uuid) ou identificador_externo do dispositivo */
-  dispositivoId: string;
+  /** id (uuid) ou identificador_externo do dispositivo; ausente no registro manual */
+  dispositivoId?: string;
   /** UserID informado pelo equipamento (= pessoa.codigo_dispositivo). Nulo se não reconhecido. */
   userId?: string | null;
   /** Alternativa ao userId: pessoa escolhida pelo porteiro/simulador */
@@ -62,12 +62,12 @@ export function montarMensagem(d: { permitido: boolean; motivo: MotivoNegativa |
 
 /** Decide (identificação ≠ autorização) e registra o acesso. Usado pelo agente, simulador e registro manual. */
 export async function registrarDecisao(repo: RepoDecisao, e: EntradaDecisao, agora = new Date()): Promise<ResultadoDecisao> {
-  const disp = await repo.buscarDispositivo(e.dispositivoId);
-  if (!disp) throw new Error("Dispositivo não encontrado");
+  const disp = e.dispositivoId ? await repo.buscarDispositivo(e.dispositivoId) : null;
+  if (e.dispositivoId && !disp) throw new Error("Dispositivo não encontrado");
 
   const pessoa = e.pessoaId ? await repo.buscarPessoaPorId(e.pessoaId) : e.userId ? await repo.buscarPessoaPorCodigo(String(e.userId)) : null;
-  let sentido: TipoMovimento = e.sentido ?? (disp.sentido === "SAIDA" ? "SAIDA" : "ENTRADA");
-  if (!e.sentido && disp.sentido === "BIDIRECIONAL" && pessoa) sentido = (await repo.ultimoMovimento(pessoa.id)) === "ENTRADA" ? "SAIDA" : "ENTRADA";
+  let sentido: TipoMovimento = e.sentido ?? (disp?.sentido === "SAIDA" ? "SAIDA" : "ENTRADA");
+  if (!e.sentido && disp?.sentido === "BIDIRECIONAL" && pessoa) sentido = (await repo.ultimoMovimento(pessoa.id)) === "ENTRADA" ? "SAIDA" : "ENTRADA";
 
   let decisao: { permitido: boolean; motivo: MotivoNegativa | null; autorizacaoId: string | null };
   if (!pessoa && !e.userId && !e.pessoaId) decisao = { permitido: false, motivo: "NAO_RECONHECIDO", autorizacaoId: null };
@@ -79,7 +79,7 @@ export async function registrarDecisao(repo: RepoDecisao, e: EntradaDecisao, ago
   const registroId = await repo.inserirRegistro({
     pessoa_id: pessoa?.id ?? null,
     autorizacao_id: decisao.autorizacaoId,
-    dispositivo_id: disp.id,
+    dispositivo_id: disp?.id ?? null,
     registrado_por: e.registradoPor ?? null,
     tipo_movimento: sentido,
     origem: ORIGEM[e.metodo],
@@ -88,7 +88,7 @@ export async function registrarDecisao(repo: RepoDecisao, e: EntradaDecisao, ago
     data_hora: agora.toISOString(),
     observacao: e.observacao ?? (e.metodo === "OUTRO" ? "Método de identificação não informado pelo equipamento" : null),
   });
-  if (e.bruto !== undefined) {
+  if (e.bruto !== undefined && disp) {
     await repo.inserirEvento({ dispositivo_id: disp.id, registro_acesso_id: registroId, detalhe: e.bruto, codigo_externo: e.userId ? String(e.userId) : null });
   }
   if (decisao.permitido && sentido === "SAIDA" && pessoa?.tipo === "VISITANTE") await repo.encerrarVisitaAberta(pessoa.id, agora);

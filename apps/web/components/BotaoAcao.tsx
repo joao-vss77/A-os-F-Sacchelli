@@ -3,7 +3,7 @@ import { useState, useTransition } from "react";
 
 /** Botão que executa uma server action, com confirmação opcional e retorno em texto. */
 export function BotaoAcao({ acao, rotulo, classe = "btn-neutro h-9 px-3 text-sm", confirmar, pedirTexto }: {
-  acao: (texto?: string) => Promise<void | { ok: boolean; mensagem: string }>;
+  acao: (texto?: string) => Promise<unknown>;
   rotulo: React.ReactNode;
   classe?: string;
   confirmar?: string;
@@ -26,7 +26,7 @@ export function BotaoAcao({ acao, rotulo, classe = "btn-neutro h-9 px-3 text-sm"
           } else if (confirmar && !window.confirm(confirmar)) return;
           iniciar(async () => {
             const r = await acao(texto);
-            setMsg(r && "mensagem" in r ? r.mensagem : "");
+            setMsg(r && typeof r === "object" && "mensagem" in r ? String((r as { mensagem: unknown }).mensagem) : "");
           });
         }}
       >

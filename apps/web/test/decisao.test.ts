@@ -50,6 +50,12 @@ describe("registrarDecisao", () => {
     expect(registros[0].tipo_movimento).toBe("SAIDA");
     expect(encerradas).toEqual(["p1"]);
   });
+  it("registro manual sem dispositivo usa o sentido informado e grava o porteiro", async () => {
+    const { repo, registros } = repoFalso();
+    const r = await registrarDecisao(repo, { pessoaId: "p1", metodo: "MANUAL", sentido: "ENTRADA", registradoPor: "u1" }, agora);
+    expect(r.permitido).toBe(true);
+    expect(registros[0]).toMatchObject({ dispositivo_id: null, origem: "MANUAL_PORTEIRO", registrado_por: "u1", tipo_movimento: "ENTRADA" });
+  });
   it("dispositivo inexistente lança erro", async () => {
     const { repo } = repoFalso();
     await expect(registrarDecisao(repo, { dispositivoId: "x", userId: "1001", metodo: "FACIAL" }, agora)).rejects.toThrow("Dispositivo não encontrado");

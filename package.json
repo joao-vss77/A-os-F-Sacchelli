@@ -1,9 +1,17 @@
 {
   "name": "portaria-sacchelli",
   "private": true,
-  "workspaces": ["packages/*", "apps/*", "agent"],
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "agent"
+  ],
   "scripts": {
-    "test": "npm test --workspaces --if-present",
-    "build": "npm run build --workspaces --if-present"
+    "test": "npm run test:sql && npm test --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "test:sql": "node scripts/check-sql.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.2.17"
   }
 }

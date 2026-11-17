@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     .lt("executado_em", new Date(Date.now() - 120_000).toISOString());
 
   const { data: pendentes } = await sb.from("comando_dispositivo").select("id, tipo, payload, tentativas")
-    .eq("dispositivo_id", disp.id).eq("situacao", "PENDENTE").order("criado_em").limit(5);
+    .eq("dispositivo_id", disp.id).eq("situacao", "PENDENTE").order("seq").limit(5);
   const lista = pendentes ?? [];
   for (const c of lista) {
     await sb.from("comando_dispositivo")

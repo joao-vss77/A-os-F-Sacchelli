@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { BarChart3, Cpu, DoorOpen, History, Home, LogOut, Settings, Users } from "lucide-react";
 import type { Perfil } from "@portaria/core";
 import { supabaseNavegador } from "@/lib/supabase/client";
-import { Logo } from "./Logo";
+import { Simbolo } from "./Logo";
 
 const ITENS: { href: string; rotulo: string; Icone: typeof Home; perfis?: Perfil[] }[] = [
   { href: "/", rotulo: "Início", Icone: Home },
@@ -48,7 +48,9 @@ export function Sidebar({ perfil, nome }: { perfil: Perfil; nome: string }) {
         </button>
       </nav>
       <div className="mx-3 border-t border-white/15 py-4 text-center">
-        <div className="mx-auto w-fit scale-[.62]"><Logo claro compacto /></div>
+        <Simbolo className="mx-auto h-7 w-auto" />
+        <div className="mt-1 font-marca text-[13px] font-extrabold tracking-tight">SACCHELLI</div>
+        <div className="text-[6.5px] font-semibold tracking-[0.2em] text-navy-100">QUALIDADE DE AÇO</div>
         <p className="mt-1 truncate text-[11px] text-navy-100" title={nome}>{nome}</p>
         <p className="text-[10px] uppercase tracking-wider text-sac-amarelo">{perfil}</p>
       </div>

@@ -167,6 +167,8 @@ create index evento_dispositivo_data_idx on evento_dispositivo (data_hora desc);
 -- Fila de comandos executados pelo agente local
 create table comando_dispositivo (
   id uuid primary key default gen_random_uuid(),
+  -- ordem de execução (vários comandos criados no mesmo instante: usuário antes da face)
+  seq bigint generated always as identity,
   dispositivo_id uuid not null references dispositivo(id) on delete cascade,
   pessoa_id uuid references pessoa(id) on delete cascade,
   tipo text not null check (tipo in ('CADASTRAR_USUARIO','CADASTRAR_FACE','CAPTURAR_DIGITAL','REMOVER_USUARIO','ABRIR_PORTA')),
@@ -177,7 +179,7 @@ create table comando_dispositivo (
   criado_em timestamptz not null default now(),
   executado_em timestamptz
 );
-create index comando_pendente_idx on comando_dispositivo (dispositivo_id, situacao, criado_em);
+create index comando_pendente_idx on comando_dispositivo (dispositivo_id, situacao, seq);
 
 create table log_auditoria (
   id uuid primary key default gen_random_uuid(),

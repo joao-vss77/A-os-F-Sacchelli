@@ -22,4 +22,9 @@ await db.exec(`insert into registro_acesso (pessoa_id, tipo_movimento, origem, r
   insert into registro_acesso (pessoa_id, tipo_movimento, origem, resultado) select id,'SAIDA','SIMULADOR','LIBERADO' from pessoa order by nome_completo limit 1;`);
 console.log("presentes", (await db.query("select count(*)::int n from vw_presentes")).rows[0].n, "(esperado 1)");
 console.log("horas", (await db.query("select count(*)::int n from vw_eventos_hora")).rows[0].n);
+// fila: comandos criados juntos saem na ordem de inserção
+await db.exec(`insert into comando_dispositivo (dispositivo_id, tipo) select id, t from dispositivo, unnest(array['CADASTRAR_USUARIO','CADASTRAR_FACE']) with ordinality as x(t, n) where identificador_externo = 'portaria-01' order by n`);
+const ordem = (await db.query("select tipo from comando_dispositivo order by seq")).rows.map((r) => r.tipo).join(",");
+if (ordem !== "CADASTRAR_USUARIO,CADASTRAR_FACE") { console.log("FALHOU ordem da fila:", ordem); process.exit(1); }
+console.log("ordem da fila ok");
 console.log("migrations ok");

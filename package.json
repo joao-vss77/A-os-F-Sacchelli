@@ -1,0 +1,9 @@
+{
+  "name": "portaria-sacchelli",
+  "private": true,
+  "workspaces": ["packages/*", "apps/*", "agent"],
+  "scripts": {
+    "test": "npm test --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present"
+  }
+}

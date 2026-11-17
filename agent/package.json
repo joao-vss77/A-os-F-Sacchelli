@@ -1,0 +1,13 @@
+{
+  "name": "@portaria/agente",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Agente local: integra o equipamento Intelbras (Modo Online + CGI) ao Sistema de Portaria",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node --env-file=.env dist/main.js",
+    "dev": "tsx --env-file=.env src/main.ts",
+    "test": "vitest run"
+  }
+}

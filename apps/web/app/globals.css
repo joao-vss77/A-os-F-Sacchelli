@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body { @apply bg-fundo text-tinta antialiased; }
+  h1, h2, h3 { @apply font-marca text-navy; }
+}
+
+@layer components {
+  .cartao { @apply rounded-2xl border border-borda/70 bg-white shadow-cartao; }
+  .rotulo { @apply mb-1.5 block text-[15px] font-semibold text-tinta; }
+  .obrig::after { content: " *"; @apply text-sac-vermelho; }
+  .campo {
+    @apply flex h-12 w-full items-center gap-3 rounded-lg border border-borda bg-white px-3.5 text-[15px] text-tinta
+      transition focus-within:border-navy-600 focus-within:ring-2 focus-within:ring-navy-600/20;
+  }
+  .campo > svg { @apply h-5 w-5 shrink-0 text-suave; }
+  .campo input, .campo select { @apply h-full w-full bg-transparent outline-none placeholder:text-slate-400; }
+  .campo.erro { @apply border-sac-vermelho ring-2 ring-sac-vermelho/15; }
+  .campo.leitura { @apply bg-slate-100; }
+  .msg-erro { @apply mt-1 text-sm text-sac-vermelho; }
+  .btn { @apply inline-flex h-11 items-center justify-center gap-2 rounded-lg px-5 text-[15px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-primario { @apply btn bg-navy text-white hover:bg-navy-700; }
+  .btn-contorno { @apply btn border-2 border-navy text-navy hover:bg-navy-50; }
+  .btn-neutro { @apply btn border border-borda bg-white text-tinta hover:bg-slate-50; }
+  .btn-perigo { @apply btn bg-sac-vermelho text-white hover:brightness-110; }
+  .tabela { @apply w-full text-left text-sm; }
+  .tabela th { @apply border-b border-borda bg-navy-50 px-4 py-2.5 font-semibold text-navy; }
+  .tabela td { @apply border-b border-borda/60 px-4 py-2.5 align-top; }
+  .selo { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold; }
+}

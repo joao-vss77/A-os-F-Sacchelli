@@ -5,12 +5,10 @@ import { Fingerprint, Hand, Radio, ScanFace, Cpu } from "lucide-react";
 import { formatarDataHora, ROTULO_MOTIVO, type MotivoNegativa } from "@portaria/core";
 import { supabaseNavegador } from "@/lib/supabase/client";
 import { Selo } from "./Selo";
+import { SELECT_FEED, type EventoFeed } from "@/lib/feed";
 
-export interface EventoFeed {
-  id: string; data_hora: string; tipo_movimento: string; resultado: string; motivo_negativa: string | null; origem: string;
-  pessoa: { nome_completo: string } | null; dispositivo: { nome: string } | null;
-}
-export const SELECT_FEED = "id, data_hora, tipo_movimento, resultado, motivo_negativa, origem, pessoa:pessoa_id(nome_completo), dispositivo:dispositivo_id(nome)";
+export type { EventoFeed };
+
 
 const ICONE: Record<string, typeof ScanFace> = { RECONHECIMENTO_FACIAL: ScanFace, BIOMETRIA_DIGITAL: Fingerprint, MANUAL_PORTEIRO: Hand, SIMULADOR: Cpu };
 
